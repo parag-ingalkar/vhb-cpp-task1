@@ -119,7 +119,20 @@ int main()
         }
         else if (choice == 4)
         {
-            std::cout << "\nExiting" << std::endl;
+            for (auto course : courses)
+            {
+                if (!(course.will_take_place()))
+                {
+                    std::cout << "----------------------------------------" << std::endl;
+                    std::cout << "Course " << course.get_name() << " is cancelled." << std::endl;
+                    std::cout << "Notifying below  participants: " << std::endl;
+                    for (auto participant : course.get_participants())
+                    {
+                        std::cout << participant.get_name() << "(" << participant.get_email() << ")" << std::endl;
+                    }
+                    std::cout << "----------------------------------------" << std::endl;
+                }
+            }
             break;
         }
         else

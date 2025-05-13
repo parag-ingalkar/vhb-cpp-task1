@@ -27,9 +27,11 @@ public:
     std::string get_lecturer() const { return _lecturer.get_name(); }
     void add_student(Student student)
     {
+        std::cout << "----------------------------------------" << std::endl;
         if (is_full())
         {
             std::cout << "Course is already full." << std::endl;
+            std::cout << "----------------------------------------" << std::endl;
             return;
         }
 
@@ -38,6 +40,7 @@ public:
             if (s.get_email() == student.get_email())
             {
                 std::cout << "Student already registered." << std::endl;
+                std::cout << "----------------------------------------" << std::endl;
                 return;
             }
         }
@@ -45,15 +48,17 @@ public:
         if ((student.get_university() != _offering_university) && (student.get_num_courses_enrolled() >= 1))
         {
             std::cout << "Cannot register to more than One course" << std::endl;
+            std::cout << "----------------------------------------" << std::endl;
             return;
         }
 
         _participants.push_back(student);
         student.enroll_to_course();
         std::cout << "Student " << student.get_name() << " succesfully enrolled in " << _course_name << "." << std::endl;
+        std::cout << "----------------------------------------" << std::endl;
     }
     bool will_take_place() { return _participants.size() >= MIN_PARTICIPANTS; }
-    const std::vector<Student> get_participant() const { return _participants; }
+    const std::vector<Student> get_participants() const { return _participants; }
 
     void display_info()
     {
@@ -64,10 +69,10 @@ public:
 
     void display_participants()
     {
-        std::cout << "Participants:" << std::endl;
+        std::cout << "\nParticipants:" << std::endl;
         for (auto participant : _participants)
         {
-            std::cout << participant.get_name() << "(" << participant.get_email() << ")" << std::endl;
+            std::cout << "\t" << participant.get_name() << "(" << participant.get_email() << ")" << std::endl;
         }
     }
 };
