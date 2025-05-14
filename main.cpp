@@ -8,16 +8,15 @@
 int main()
 {
     std::vector<Course> courses = {
-        Course("Programming", Lecturer("Dr.", "Frank", "Vance", "frank.vance@uni.edu")),
-        Course("Databases", Lecturer("Prof.", "Kenji", "Tanaka", "kenji.tanaka@uni.edu")),
-        Course("Software Engineering", Lecturer("Dr.", "Alex", "Fince", "alex.finch@uni.edu"))};
+        Course("Programming", std::make_shared<Lecturer>("Dr.", "Frank", "Vance", "frank.vance@uni.edu")),
+        Course("Databases", std::make_shared<Lecturer>("Prof.", "Kenji", "Tanaka", "kenji.tanaka@uni.edu")),
+        Course("Software Engineering", std::make_shared<Lecturer>("Dr.", "Alex", "Fince", "alex.finch@uni.edu"))};
 
-    std::vector<Student> students;
+    std::vector<std::shared_ptr<Student>> students;
 
     while (true)
     {
-        std::cout << std::endl
-                  << "=== Course Management Menu ===" << std::endl;
+        std::cout << "\n=== Course Management Menu ===" << std::endl;
         std::cout << "1. Register for a course" << std::endl;
         std::cout << "2. Show one/all courses with participants" << std::endl;
         std::cout << "3. Show courses not fully booked" << std::endl;
@@ -33,22 +32,21 @@ int main()
             std::cout << "\nAvailable Courses:" << std::endl;
             for (size_t i = 0; i < courses.size(); ++i)
             {
-                std::cout << i + 1 << ". " << courses[i].get_name() << std::endl;
+                std::cout << i + 1 << ". " << courses[i].getName() << std::endl;
             }
 
-            std::cout << "\nEnter Course number: ";
-
+            std::cout << "\nEnter course number: ";
             int course_choice;
             std::cin >> course_choice;
             std::cin.ignore();
 
-            if (course_choice < 1 || course_choice > courses.size())
+            if (course_choice < 1 || static_cast<size_t>(course_choice) > courses.size())
             {
-                std::cout << "Invalid Course number." << std::endl;
+                std::cout << "Invalid course number." << std::endl;
                 continue;
             }
 
-            std::string first_name, last_name, email, matriculation_num, university;
+            std::string first_name, last_name, email, matriculation_number, university;
             std::cout << "Enter student first name: ";
             std::getline(std::cin, first_name);
             std::cout << "Enter student surname: ";
@@ -56,12 +54,13 @@ int main()
             std::cout << "Enter email: ";
             std::getline(std::cin, email);
             std::cout << "Enter matriculation number: ";
-            std::getline(std::cin, matriculation_num);
+            std::getline(std::cin, matriculation_number);
             std::cout << "Enter university: ";
             std::getline(std::cin, university);
 
-            Student student = Student(matriculation_num, university, first_name, last_name, email);
-            courses[course_choice - 1].add_student(student);
+            // Student student(matriculation_number, university, first_name, last_name, email);
+            std::shared_ptr<Student> student = std::make_shared<Student>(matriculation_number, university, first_name, last_name, email);
+            courses[course_choice - 1].addStudent(student);
             students.push_back(student);
         }
         else if (choice == 2)
@@ -69,7 +68,7 @@ int main()
             std::cout << "\nCourse Details" << std::endl;
             for (size_t i = 0; i < courses.size(); ++i)
             {
-                std::cout << i + 1 << ". " << courses[i].get_name() << std::endl;
+                std::cout << i + 1 << ". " << courses[i].getName() << std::endl;
             }
             std::cout << courses.size() + 1 << ". Show all courses' details" << std::endl;
 
@@ -81,22 +80,22 @@ int main()
             if (course_choice >= 1 && course_choice <= courses.size())
             {
                 std::cout << "----------------------------------------" << std::endl;
-                courses[course_choice - 1].display_info();
-                courses[course_choice - 1].display_participants();
-                if (!(courses[course_choice - 1].will_take_place()))
+                courses[course_choice - 1].displayInfo();
+                courses[course_choice - 1].displayParticipants();
+                if (!courses[course_choice - 1].willTakePlace())
                 {
                     std::cout << "\nThis course will not take place" << std::endl;
                 }
                 std::cout << "----------------------------------------" << std::endl;
             }
-            else if (course_choice == (courses.size() + 1))
+            else if (course_choice == static_cast<int>(courses.size()) + 1)
             {
-                for (auto course : courses)
+                for (auto &course : courses)
                 {
                     std::cout << "----------------------------------------" << std::endl;
-                    course.display_info();
-                    course.display_participants();
-                    if (!(course.will_take_place()))
+                    course.displayInfo();
+                    course.displayParticipants();
+                    if (!course.willTakePlace())
                     {
                         std::cout << "\nThis course will not take place" << std::endl;
                     }
@@ -106,30 +105,27 @@ int main()
         }
         else if (choice == 3)
         {
-            std::cout << "\nShowing available Courses" << std::endl;
-            for (auto course : courses)
+            std::cout << "\nShowing available courses" << std::endl;
+            for (auto &course : courses)
             {
-                if (!course.is_full())
+                if (!course.isFull())
                 {
                     std::cout << "----------------------------------------" << std::endl;
-                    course.display_info();
+                    course.displayInfo();
                     std::cout << "----------------------------------------" << std::endl;
                 }
             }
         }
         else if (choice == 4)
         {
-            for (auto course : courses)
+            for (auto &course : courses)
             {
-                if (!(course.will_take_place()))
+                if (!course.willTakePlace())
                 {
                     std::cout << "----------------------------------------" << std::endl;
-                    std::cout << "Course " << course.get_name() << " is cancelled." << std::endl;
-                    std::cout << "Notifying below  participants: " << std::endl;
-                    for (auto participant : course.get_participants())
-                    {
-                        std::cout << participant.get_name() << "(" << participant.get_email() << ")" << std::endl;
-                    }
+                    std::cout << "Course " << course.getName() << " is cancelled." << std::endl;
+                    std::cout << "Notifying Participants" << std::endl;
+                    course.displayParticipants();
                     std::cout << "----------------------------------------" << std::endl;
                 }
             }
@@ -137,7 +133,9 @@ int main()
         }
         else
         {
-            std::cout << "\nInvalid option. Try Again." << std::endl;
+            std::cout << "\nInvalid option. Try again." << std::endl;
         }
     }
+
+    return 0;
 }
