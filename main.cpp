@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <memory>
 #include "person.hpp"
 #include "course.hpp"
@@ -12,7 +13,7 @@ int main()
         Course("Databases", std::make_shared<Lecturer>("Prof.", "Kenji", "Tanaka", "kenji.tanaka@uni.edu")),
         Course("Software Engineering", std::make_shared<Lecturer>("Dr.", "Alex", "Fince", "alex.finch@uni.edu"))};
 
-    std::vector<std::shared_ptr<Student>> students;
+    std::map<std::string, std::shared_ptr<Student>> students;
 
     while (true)
     {
@@ -58,10 +59,18 @@ int main()
             std::cout << "Enter university: ";
             std::getline(std::cin, university);
 
-            // Student student(matriculation_number, university, first_name, last_name, email);
-            std::shared_ptr<Student> student = std::make_shared<Student>(matriculation_number, university, first_name, last_name, email);
+            std::shared_ptr<Student> student;
+
+            if (students.count(email))
+            {
+                student = students[email];
+            }
+            else
+            {
+                student = std::make_shared<Student>(matriculation_number, university, first_name, last_name, email);
+                students[email] = student;
+            }
             courses[course_choice - 1].addStudent(student);
-            students.push_back(student);
         }
         else if (choice == 2)
         {

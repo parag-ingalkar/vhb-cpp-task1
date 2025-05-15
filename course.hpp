@@ -57,17 +57,19 @@ public:
             }
         }
 
-        if (student->getUniversity() != _offering_university && student->getNumCoursesEnrolled() >= 1)
+        if ((student->getUniversity() != _offering_university) && (student->getNumCoursesEnrolled() >= 1))
         {
             std::cout << "Cannot register to more than one course." << std::endl;
             std::cout << "----------------------------------------" << std::endl;
             return;
         }
 
-        _participants.push_back(student);
         student->enrollToCourse();
+        _participants.push_back(student);
 
         std::cout << "Student " << student->getName() << " successfully enrolled in " << _course_name << "." << std::endl;
+        std::cout << "number of course enrolled " << student->getNumCoursesEnrolled() << std::endl;
+        std::cout << "student from university" << student->getUniversity() << std::endl;
         std::cout << "----------------------------------------" << std::endl;
     }
 
